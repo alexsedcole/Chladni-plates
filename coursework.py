@@ -86,7 +86,7 @@ class Plate:
         Xg = self.mesh()[0]
         Yg = self.mesh()[1]
 
-        norm = matplotlib.colors.Normalize(vmin=-2, vmax=2)
+        
 
         '''
         for i in range(int(t_end / k) + 1):
@@ -129,6 +129,8 @@ class Plate:
         vmin = -self.amp
         vmax = self.amp
         
+        norm = matplotlib.colors.Normalize(vmin=-self.amp, vmax=self.amp)
+        
         fig.colorbar(matplotlib.cm.ScalarMappable(norm=norm, cmap=colour), ax=ax3, orientation='vertical', label='Displacement (m)')
       
 
@@ -163,7 +165,7 @@ class Plate:
         #'''
 
 
-test_plate = Plate(1,1,0.02,0.02,15,0.03/pi,0.5,2)
+test_plate = Plate(1,1,0.02,0.02,15,0.03/pi,0.5,1)
 test_plate.visualise()
 
 
