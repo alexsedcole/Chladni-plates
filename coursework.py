@@ -107,13 +107,17 @@ class Plate:
         ax1.set_ylabel('Y')
         ax1.set_zlabel('U')
 
-        ax2 = fig.add_subplot(212)
+
+        ax2 = fig.add_subplot(222)
         ax2.set_xlabel('X')
         ax2.set_ylabel('Y')
+        
+        
 
         ax3 = fig.add_subplot(223)
         ax3.set_xlabel('X')
         ax3.set_ylabel('Y')
+        
 
         ax1.set_box_aspect([1, 1, 1])  # set aspect ratio of 3D plot
         ax2.set_aspect('equal')  # set aspect ratio of contour plot
@@ -122,15 +126,11 @@ class Plate:
         colour = 'coolwarm'
 
  
-
-  
-#calibrating the colour bar for a displacement snapshot at a certain time so as to co-incide with the maximum/minimum displacement
-
         vmin = -self.amp
         vmax = self.amp
         
-        fig.colorbar(ax2.contour(Xg, Yg, U[int(self.nt/3)], cmap=colour, vmin=vmin, vmax=vmax), ax=ax2)
-     
+        fig.colorbar(matplotlib.cm.ScalarMappable(norm=norm, cmap=colour), ax=ax3, orientation='vertical', label='Displacement (m)')
+      
 
 
         for i in range(int(self.t_end / self.k) + 1):
@@ -139,11 +139,14 @@ class Plate:
             ax3.clear()
             ax1.plot_surface(Xg, Yg, U[i], cmap=colour, vmin=vmin, vmax=vmax)
             ax1.set_zlim([-2, 2])  # set the z-axis limits
+            
             #contour plot of 0 displacement
-            ax2.contour(Xg, Yg, U[i],levels=[0], cmap=colour, vmin=vmin, vmax=vmax)
+    
+            ax2.contour(Xg, Yg, U[i], levels=[0], cmap=colour, vmin=vmin, vmax=vmax)
+            ax2.set_title('Zero displacement')
             
             ax3.imshow(U[i], interpolation='bilinear', norm=norm, extent=[0, self.xb, 0, self.yb], origin='lower', cmap=colour)
-       
+  
             
             
 
