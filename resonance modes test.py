@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def calc(nx,ny,L,h):
+def coeff(nx,ny,L,h):
     
     k = int(2*L/h)
     
@@ -42,7 +42,7 @@ colourscale = 0.0001
 
 
 
-U = calc(nx,ny,L,h)
+U = coeff(nx,ny,L,h)
 
 x = np.arange(-L,L,h)
 y = np.arange(-L,L,h)
