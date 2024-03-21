@@ -16,7 +16,7 @@ import keyboard  # just so erronous plots can be stopped more QUICKLy
 
 
 class Plate:
-    def __init__(self, L, h, k, t_end, freq, c,amp,m,n):
+    def __init__(self, L, h, k, t_end, freq, c,amp,m,n,stty):
         self.L = L
         self.h = h
         self.k = k
@@ -26,7 +26,7 @@ class Plate:
         self.amp = amp
         self.m = m
         self.n = n
-        
+        self.stty = stty
         
         self.nx = int(L / h) + 1
         self.ny = self.nx
@@ -55,7 +55,20 @@ class Plate:
                 
                 #so where this is zero in the mesh, there is a node
         
-        return Ua
+        nodeplot = np.zeros((self.nx,self.ny))
+        
+        
+        
+        for xi in range(self.nx):
+            for yi in range(self.ny):
+                if -self.stty < Ua[xi,yi] <self.stty:
+                    nodeplot[xi,yi] = 1
+        
+        
+        
+        
+        
+        return nodeplot
     
     
     
@@ -203,10 +216,8 @@ class Plate:
         #'''
 
 
-
-
 L = 1
-h = 0.02
+h = 0.005
 k = 0.02
 t_end = 15
 freq = 0.03/pi
@@ -215,20 +226,27 @@ amp = 1
 m = 1
 n = 0
 
-cspan = 0.001
+#as we use a mesh for the analytical solution, the values aren't exactly zero at the nodes
+#so this value is used to determine what is considered zero
+stty = 0.00001
+
+cspan = 1
 
 
-test_plate = Plate(L,h,k,t_end,freq,cs,amp,m,n)
+test_plate = Plate(L,h,k,t_end,freq,cs,amp,m,n,stty)
 
-
+#test_plate.visualise()
 
 
 test_plate.analytical()
-plt.imshow(test_plate.analytical(), interpolation='bilinear', extent=[-L/2, L/2, -L/2, L/2], origin='lower', cmap='coolwarm', vmin=-cspan, vmax=cspan)
+
+plt.imshow(test_plate.analytical(), interpolation='bilinear', extent=[-L/2, L/2, -L/2, L/2], origin='lower',vmin=-cspan, vmax=cspan)
 
 #ax2.contour(Xg, Yg, U[i], levels=[0], cmap=colour, vmin=vmin, vmax=vmax)
 #ax2.set_title('Zero displacement')
 
+
+A = test_plate.analytical()
 
 '''
 
