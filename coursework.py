@@ -47,9 +47,17 @@ class Plate:
         # first version: square box bounding values
 
         U[0,:,:] = 0   # no initial displacement everywhere - boundary value in time
+    
         U[1,:,:] = 0   # need another boundary condition for accel (should improve later!)
         #U[:,:,0], U[:,:,-1] = 0, 0 # no displacement at the boundaries always
         #U[:,0,:], U[:,-1,:] = 0, 0
+
+    
+        
+        
+
+
+
 
         # larger central perterbation version
         #for x in [i for i in range(1, nx-1) if sqrt((i-nx/2)**2) < 1]:
@@ -57,10 +65,9 @@ class Plate:
         #        U[:,x,y] = [sin(0.1*i) for i in range(nt)]
         #
 
-       
 
-
-        U[:,int(self.nx/2),int(self.ny/2)] = [self.amp*sin(2*pi*self.freq*i) for i in range(self.nt)]# + [0 for i in range(nt-20)]   # oscillating point at the centre
+        w = 2*pi*self.freq
+        U[:,int(self.nx/2),int(self.ny/2)] = [self.amp*cos(w*i) for i in range(self.nt)]# + [0 for i in range(nt-20)]   # oscillating point at the centre
         # In this section I am implementing the numerical method
 
         for t in range(2, self.nt):
@@ -165,20 +172,26 @@ class Plate:
         #'''
 
 
-test_plate = Plate(1,1,0.02,0.02,15,0.03/pi,0.5,1)
+
+
+xb = 1
+yb = 1
+h = 0.02
+k = 0.02
+t_end = 15
+freq = 0.03/pi
+cs = 0.5
+amp = 1
+
+mass = 1
+mu = 1/(xb*yb)
+
+test_plate = Plate(xb,yb,h,k,t_end,freq,cs,amp)
+
 test_plate.visualise()
 
 
-tau = 69*10**9
-rho = 2500
-cs = sqrt(tau/rho)
-freq = 400
-amp = 1
-k = 0.0001e5/freq
-
-#test_plate_2 = Plate(xb=1, yb=1, h=0.02, k=0.02, t_end=2/freq, freq=freq, c=cs, amp=amp)
-
-
+displacement = test_plate.solve_matrix()
 
 
 
