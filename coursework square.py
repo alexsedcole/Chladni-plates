@@ -16,7 +16,7 @@ import keyboard  # just so erronous plots can be stopped more QUICKLy
 
 
 class Plate:
-    def __init__(self, L, h, k, t_end,c,amp,m,n,stty):
+    def __init__(self, L, h, k, t_end,freq,c,amp,m,n,stty):
         self.L = L
         self.h = h
         self.k = k
@@ -27,8 +27,8 @@ class Plate:
         self.m = m
         self.n = n
         self.stty = stty
-        
-        self.freq = ((pi*c)/(2*L)) * sqrt((m**2 + n**2))
+        #self.freq = freq
+        self.freq = ((pi*c)/(L)) * sqrt((m**2 + n**2))
         
         self.nx = int(L / h) + 1
         self.ny = self.nx
@@ -76,13 +76,6 @@ class Plate:
     
     
     
-    
-    
-    
-    
-    
-    
-    
     def solve_matrix(self):
         # In this section I am defining arrays I would need (if needed)
 
@@ -112,8 +105,8 @@ class Plate:
         #
 
 
-        w = 2*pi*self.freq
-        U[:,int(self.nx/2),int(self.ny/2)] = [self.amp*sin(w*i) for i in range(self.nt)]# + [0 for i in range(nt-20)]   # oscillating point at the centre
+        
+        U[:,int(self.nx/2),int(self.ny/2)] = [self.amp*sin(k*self.freq*i) for i in range(self.nt)]# + [0 for i in range(nt-20)]   # oscillating point at the centre
         # In this section I am implementing the numerical method
 
         for t in range(2, self.nt):
@@ -219,13 +212,14 @@ class Plate:
 
 
 L = 1
-h = 0.01
-k = 0.01
+h = 0.02
+k = 0.02
 t_end = 10
-#freq = pi/8
-cs = 1
+freq = 1
+#in rad/s
+cs = 0.5
 amp = 1
-m = 1
+m = 4
 n = 0
 
 #as we use a mesh for the analytical solution, the values aren't exactly zero at the nodes
@@ -234,8 +228,8 @@ stty = 0.00001
 
 cspan = 1
 
-#
-test_plate = Plate(L,h,k,t_end,cs,amp,m,n,stty)
+
+test_plate = Plate(L,h,k,t_end,freq,cs,amp,m,n,stty)
 
 test_plate.visualise()
 
@@ -245,7 +239,10 @@ test_plate.visualise()
 #ax2.set_title('Zero displacement')
 
 
-A = test_plate.analytical()
+#A = test_plate.analytical()
+#displacement = test_plate.solve_matrix()
+
+print(test_plate.freq)
 
 '''
 
@@ -261,3 +258,7 @@ chladni_plate = Plate(xb=0.5, yb=0.5, h=0.025, k=k, t_end=10/freq, freq=freq, c=
 chladni_plate.visualise()
 
 '''
+
+
+
+
