@@ -16,17 +16,19 @@ import keyboard  # just so erronous plots can be stopped more QUICKLy
 
 
 class Plate:
-    def __init__(self, L, h, k, t_end, freq, c,amp,m,n,stty):
+    def __init__(self, L, h, k, t_end,c,amp,m,n,stty):
         self.L = L
         self.h = h
         self.k = k
-        self.freq = freq
+       
         self.t_end = t_end
         self.c = c
         self.amp = amp
         self.m = m
         self.n = n
         self.stty = stty
+        
+        self.freq = ((pi*c)/(2*L)) * sqrt((m**2 + n**2))
         
         self.nx = int(L / h) + 1
         self.ny = self.nx
@@ -57,7 +59,7 @@ class Plate:
         
         nodeplot = np.zeros((self.nx,self.ny))
         
-        
+        #new matrix which is 1 where nodes exist in Ua
         
         for xi in range(self.nx):
             for yi in range(self.ny):
@@ -217,11 +219,11 @@ class Plate:
 
 
 L = 1
-h = 0.005
-k = 0.02
-t_end = 15
-freq = 0.03/pi
-cs = 0.5
+h = 0.01
+k = 0.01
+t_end = 10
+#freq = pi/8
+cs = 1
 amp = 1
 m = 1
 n = 0
@@ -232,15 +234,12 @@ stty = 0.00001
 
 cspan = 1
 
+#
+test_plate = Plate(L,h,k,t_end,cs,amp,m,n,stty)
 
-test_plate = Plate(L,h,k,t_end,freq,cs,amp,m,n,stty)
+test_plate.visualise()
 
-#test_plate.visualise()
-
-
-test_plate.analytical()
-
-plt.imshow(test_plate.analytical(), interpolation='bilinear', extent=[-L/2, L/2, -L/2, L/2], origin='lower',vmin=-cspan, vmax=cspan)
+#plt.imshow(test_plate.analytical(), interpolation='bilinear', extent=[-L/2, L/2, -L/2, L/2], origin='lower',vmin=-cspan, vmax=cspan)
 
 #ax2.contour(Xg, Yg, U[i], levels=[0], cmap=colour, vmin=vmin, vmax=vmax)
 #ax2.set_title('Zero displacement')
