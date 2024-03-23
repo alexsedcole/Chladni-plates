@@ -16,7 +16,7 @@ import keyboard  # just so erronous plots can be stopped more QUICKLy
 
 
 class Plate:
-    def __init__(self, L, h, k, t_end,freq,c,amp,m,n,stty,a,pv):
+    def __init__(self, L, h, k, t_end,c,amp,m,n,stty,a,pv):
         self.L = L
         self.h = h
         self.k = k
@@ -48,7 +48,7 @@ class Plate:
         return (Xg, Yg)
     
     
-    def analytical(self):
+    def nodeplot(self):
         
         Ua = np.zeros((self.nx,self.ny))
         xa = np.arange(-self.L/2,self.L/2+self.h,self.h)  #meshgrid for surface
@@ -58,21 +58,22 @@ class Plate:
             for yi in range(self.ny):
                 
                 Ua[xi,yi] = np.cos(2*self.m*np.pi*xa[xi]/L)*np.cos(2*self.n*np.pi*ya[yi]/L) + np.cos(2*self.n*np.pi*xa[xi]/L)*np.cos(2*self.m*np.pi*ya[yi]/L)
-                
+       
+          
                 #this is the coefficient of the Acos(wt) term in the equation for resonant modes
                 
                 #so where this is zero in the mesh, there is a node
         
-        nodeplot = np.zeros((self.nx,self.ny))
+        #N = np.zeros((self.nx,self.ny))
         
         #new matrix which is 1 where nodes exist in Ua
         
-        for xi in range(self.nx):
-            for yi in range(self.ny):
-                if -self.stty < Ua[xi,yi] <self.stty:
-                    nodeplot[xi,yi] = 1
+        #for xi in range(self.nx):
+            #for yi in range(self.ny):
+                #if -self.stty < Ua[xi,yi] <self.stty:
+                    #N[xi,yi] = 1
         
-        return nodeplot
+        return Ua
     
     
     def solve_matrix(self):
@@ -89,8 +90,6 @@ class Plate:
         U[1,:,:] = 0   # need another boundary condition for accel (should improve later!)
         #U[:,:,0], U[:,:,-1] = 0, 0 # no displacement at the boundaries always
         #U[:,0,:], U[:,-1,:] = 0, 0
-
-
 
         
         U[:,int(self.nx/2),int(self.ny/2)] = [self.amp*sin((k)*self.freq*i) for i in range(self.nt)]# + [0 for i in range(nt-20)]   # oscillating point at the centre
@@ -126,7 +125,15 @@ class Plate:
         Xg = self.mesh()[0]
         Yg = self.mesh()[1]
 
+        Ua = np.zeros((self.nx,self.ny))
+        xa = np.arange(-self.L/2,self.L/2+self.h,self.h)  #meshgrid for surface
+        ya = np.arange(-self.L/2,self.L/2+self.h,self.h)
         
+        for xi in range(self.nx):
+            for yi in range(self.ny):
+                
+                Ua[xi,yi] = np.cos(2*self.m*np.pi*xa[xi]/L)*np.cos(2*self.n*np.pi*ya[yi]/L) + np.cos(2*self.n*np.pi*xa[xi]/L)*np.cos(2*self.m*np.pi*ya[yi]/L)
+        #this is the analytical solution for the resonance pattern
 
         '''
         for i in range(int(t_end / k) + 1):
@@ -152,17 +159,20 @@ class Plate:
         ax2.set_xlabel('X')
         ax2.set_ylabel('Y')
         
-        
 
         ax3 = fig.add_subplot(223)
         ax3.set_xlabel('X')
         ax3.set_ylabel('Y')
         
-
+        ax4 = fig.add_subplot(224)
+        ax4.set_xlabel('X')
+        ax4.set_ylabel('Y')
+        
         ax1.set_box_aspect([1, 1, 1])  # set aspect ratio of 3D plot
         ax2.set_aspect('equal')  # set aspect ratio of contour plot
         ax3.set_aspect('equal')  # set aspect ratio of colour plot
-
+        ax4.set_aspect('equal')
+        
         colour = 'coolwarm'
 
  
@@ -176,6 +186,9 @@ class Plate:
 
         #modified this to only plot 'pv' proportion of the time
         
+        ax4.contour(Xg, Yg, Ua, levels=[0], cmap=colour, vmin=vmin, vmax=vmax)
+        ax4.set_title('Analytical node pattern solution')
+        #this plots analytical solution of resonance pattern for given m,n
         
         for i in range(int(self.pv*(self.t_end / self.k)) ,int(self.t_end / self.k) + 1):
             ax1.clear()
@@ -211,38 +224,39 @@ L = 1
 h = 0.02
 k = 0.02
 t_end =10
-freq = 1
-#in rad/s
+
 cs = 0.5
 amp = 1
 
 
 #####################
 
-m = 2
+m = 1
 
 n = 1
 
 #####################
 
 
-pv = 0.8
+pv = 0.6
 #this is how far through the timespan the visualisation is started
 #just to speed up the process since we only care about resonance for now
-#this means we can increase the timespan (closer to steady state) without having to watch for ages
+#this means we can increase the timespan (closer to final state) without having to watch for ages
 
-a = 2.139704
+a = 2.139703
 #correction factor - just for experimenting relationship between m,n and frequency
 
 
 #as we use a mesh for the analytical solution, the values aren't exactly zero at the nodes
 #so this value is used to determine what is considered zero
-stty = 0.00001
+stty = 0.01
 
-cspan = 1
+cspan = 0.01
 
 
-test_plate = Plate(L,h,k,t_end,freq,cs,amp,m,n,stty,a,pv)
+#'''
+
+test_plate = Plate(L,h,k,t_end,cs,amp,m,n,stty,a,pv)
 
 
 test_plate.visualise()
@@ -254,7 +268,7 @@ print('w =', test_plate.freq,'rad/s')
 print('Max amplitide =',test_plate.max_amplitude())
 
 
-#plt.imshow(test_plate.analytical(), interpolation='bilinear', extent=[-L/2, L/2, -L/2, L/2], origin='lower',vmin=-cspan, vmax=cspan)
+#'''
 
 
 '''
@@ -262,7 +276,7 @@ print('Max amplitide =',test_plate.max_amplitude())
 #I am iterating throug a window of correction factors
 #and seeing which ones lead to the greatest peak amplitude
 #i.e resonance
-
+#i gradually narrowed in on a value
 
 da = 0.000001
 amin = 2.139695
@@ -272,7 +286,7 @@ a = np.arange(amin,amax,da)
 
 for ai in range(len(a)):
     
-    test_plate = Plate(L,h,k,t_end,freq,cs,amp,m,n,stty,a[ai],pv)
+    test_plate = Plate(L,h,k,t_end,cs,amp,m,n,stty,a[ai],pv)
     print('factor =',a[ai])
     print('w =', test_plate.freq,'rad/s')
     print('Max amplitide =',test_plate.max_amplitude())
