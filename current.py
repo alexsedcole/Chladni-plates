@@ -6,6 +6,7 @@ from math import *
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 
 import keyboard  
 
@@ -168,10 +169,6 @@ class Plate:
             ax2.set_title('Zero displacement')
             
             ax3.imshow(U[i], interpolation='bilinear', norm=norm, extent=[0, self.L, 0, self.L], origin='lower', cmap=colour)
-  
-            
-            
-
 
             plt.pause(0.000001)
 
@@ -179,8 +176,6 @@ class Plate:
                 plt.close()
                 print('Abort!')
                 break  # finishing the loop
-        
-        
         
         
         plt.show()
@@ -224,8 +219,7 @@ m = 2
 
 n = 1
 
-
-#''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+#'''
 
 test_plate = Plate(L,h,k,amp,m,n,p,pv,rplt,q)
 
@@ -237,7 +231,7 @@ print('nt =',test_plate.nt)
 print('t_end =',test_plate.t_end)
 
 
-#''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+#'''
 
 
 '''
@@ -247,7 +241,7 @@ print('t_end =',test_plate.t_end)
 #The resonance pattern shape must also be observed to ensure the correct mode is being excited
 
 dp = 0.05
-pmin = 6.5
+pmin = 6.0
 pmax = 7.0
 p = np.arange(pmin,pmax,dp)
 A = []
@@ -265,7 +259,7 @@ for ip in range(len(p)):
 plt.plot(p,A)
 
 plt.xlabel('p')
-plt.ylabel('Amplitude')
+plt.ylabel('Maximum amplitude')
 plt.show()
 
 '''
